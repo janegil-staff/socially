@@ -8,14 +8,15 @@ export const userRegister = (data) => {
       },
     };
     try {
+        console.log("DATA: ", data);
       const response = await axios.post(
-        "/api/messenger/user-register",
+        `${process.env.REACT_APP_API_ENDPOINT}/auth/user-register`,
         data,
         config
       );
       console.log(response.data);
     } catch (error) {
-      console.log(error.response.data);
+      console.log("Register error:", error.response?.data || error.message)
     }
   };
 };
