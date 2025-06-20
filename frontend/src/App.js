@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
-
+import { Toaster } from 'react-hot-toast';
 function App() {
   return <div>
     <BrowserRouter>
@@ -10,6 +10,7 @@ function App() {
         <Route path="/messenger/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
+    <Toaster position="top-right" reverseOrder={false} />
   </div>;
 }
 
