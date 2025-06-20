@@ -1,7 +1,6 @@
 import formidable from "formidable";
 import validator from "validator";
 import registerModel from "../models/user.model.js";
-import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config.js";
@@ -17,7 +16,7 @@ export const userRegister = (req, res) => {
 
     const { image } = files;
     const error = [];
-   
+
     if (!userName) {
       error.push("Please provide your user name");
     }
@@ -58,7 +57,7 @@ export const userRegister = (req, res) => {
           });
         } else {
           let picture;
-          
+
           if (image) {
             try {
               const uploadResponse = await cloudinary.uploader.upload(
@@ -103,7 +102,7 @@ export const userRegister = (req, res) => {
               Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000
             ),
           };
-   
+
           res.status(201).cookie("authToken", token, options).json({
             successMessage: "Your Register Successful",
             token,
@@ -118,4 +117,84 @@ export const userRegister = (req, res) => {
       }
     }
   }); // end Formidable
+};
+
+export const userLogin = async (req, res) => {
+  const error = [];
+  const { email, password } = req.body;
+  if (!email) {
+    error.push("Please provide your Email");
+  }
+  if (!password) {
+    error.push("Please provide your Passowrd");
+  }
+  if (email && !validator.isEmail(email)) {
+    error.push("Please provide your Valid Email");
+  }
+  if (error.length > 0) {
+    res.status(400).json({
+      error: {
+        errorMessage: error,
+      },
+    });
+  } else {
+    try {
+      const checkUser = await registerModel
+        .findOne({
+          email: email,
+        })
+        .select("+password");
+
+      if (checkUser) {
+        const matchPassword = await bcrypt.compare(
+          password,
+          checkUser.password
+        );
+
+        if (matchPassword) {
+          const token = jwt.sign(
+            {
+              id: checkUser._id,
+              email: checkUser.email,
+              userName: checkUser.userName,
+              image: checkUser.image,
+              registerTime: checkUser.createdAt,
+            },
+            process.env.ACCESS_TOKEN_SECRET,
+            {
+              expiresIn: process.env.TOKEN_EXP,
+            }
+          );
+          const options = {
+            expires: new Date(
+              Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000
+            ),
+          };
+
+          res.status(200).cookie("authToken", token, options).json({
+            successMessage: "Your Login Successful",
+            token,
+          });
+        } else {
+          res.status(400).json({
+            error: {
+              errorMessage: ["Your Password not Valid"],
+            },
+          });
+        }
+      } else {
+        res.status(400).json({
+          error: {
+            errorMessage: ["Your Email Not Found"],
+          },
+        });
+      }
+    } catch {
+      res.status(404).json({
+        error: {
+          errorMessage: ["Internal Sever Error"],
+        },
+      });
+    }
+  }
 };
