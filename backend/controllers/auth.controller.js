@@ -17,7 +17,7 @@ export const userRegister = (req, res) => {
 
     const { image } = files;
     const error = [];
-    console.log(image);
+   
     if (!userName) {
       error.push("Please provide your user name");
     }
@@ -110,7 +110,6 @@ export const userRegister = (req, res) => {
           });
         }
       } catch (error) {
-        console.log("ERROR", error);
         res.status(500).json({
           error: {
             errorMessage: ["Interanl Server Error"],
