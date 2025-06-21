@@ -1,6 +1,6 @@
 import formidable from "formidable";
 import validator from "validator";
-import registerModel from "../models/user.model.js";
+import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config.js";
@@ -46,7 +46,7 @@ export const userRegister = (req, res) => {
       });
     } else {
       try {
-        const checkUser = await registerModel.findOne({
+        const checkUser = await User.findOne({
           email: email,
         });
         if (checkUser) {
@@ -76,7 +76,7 @@ export const userRegister = (req, res) => {
               });
             }
           }
-          const userCreate = await registerModel.create({
+          const userCreate = await User.create({
             userName,
             email,
             password: await bcrypt.hash(password, 10),
@@ -139,7 +139,7 @@ export const userLogin = async (req, res) => {
     });
   } else {
     try {
-      const checkUser = await registerModel
+      const checkUser = await User
         .findOne({
           email: email,
         })
