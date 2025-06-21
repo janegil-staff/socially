@@ -5,6 +5,7 @@ import routes from "./routes/index.js";
 import createHttpError from "http-errors";
 import cookieParser from "cookie-parser";
 
+
 dotenv.config();
 const corsOptions = {
   origin: "http://localhost:3000",
