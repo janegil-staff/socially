@@ -3,13 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { userLogin } from "../store/actions/authAction";
 import { toast } from 'react-hot-toast';
 import { useDispatch, useSelector } from "react-redux";
-
 import { ERROR_CLEAR, SUCCESS_MESSAGE_CLEAR } from "../store/types/authType";
 
 const Login = () => {
   const navigate = useNavigate();
-
-
 
   const { loading, authenticate, error, successMessage, myInfo } = useSelector(
     (state) => state.auth
